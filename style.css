@@ -28,6 +28,23 @@ header {
     z-index: 99;
 }
 
+.welcome-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+h1 {
+    font-size: 4em;
+    margin-bottom: 0.5em;
+}
+
+p {
+    font-size: 1.5em;
+}
+
 .logo {
     font-size: 2em;
     color: aliceblue;
@@ -38,6 +55,9 @@ header {
 
 }
 
+.display-2 {
+    color: darkblue;
+}
 
 .navigation a {
     position: relative;
