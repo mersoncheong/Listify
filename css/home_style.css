@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Didact Gothic";
+}
+
+
+
+body {
+    /*add images*/
+    background: #EBE8E2;
+}
+
+.product-heading {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+}
+
+nav {
+    background-color: cornflowerblue;
+    overflow: hidden;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav li {
+    float: left;
+    font-size: 1.7em;
+    font-weight: 700;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+nav li a:hover {
+    background-color: white;
+}
+
+/* CSS for the Home link */
+
+nav li:first-child a {
+    border-radius: 5px 0 0 5px;
+}
+
+nav li:first-child a:hover {
+    background-color: skyblue;
+}
+
+table {
+    margin: 0 auto;
+    /* Center the table horizontally */
+    border-collapse: collapse;
+    width: 80%;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* CSS for the Search bar */
+
+.search {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+input[type="text"] {
+    padding: 8px;
+    border: none;
+    border-radius: 3px;
+    margin-right: 10px;
+    width: 70%;
+}
+
+button[type="submit"] {
+    background-color: cornflowerblue;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
+    align-self: stretch;
+}
+
+button[type="submit"]:hover {
+    background-color: darkblue;
+}
