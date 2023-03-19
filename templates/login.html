@@ -34,21 +34,21 @@
         <span class="icon-close"><ion-icon name="close-circle-outline"></ion-icon></span>
         <div class="form-box login">
             <h2>Login</h2>
-            <form action="/login" method="post">
+            <form id="login-form" action="/login" method="post">
                 <div class="input-box">
                     <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
-                    <input type="email" required>
+                    <input type="email" id="email" required name="email">
                     <label>Email</label>
                 </div>
                 <div class="input-box">
                     <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-                    <input type="password" required>
+                    <input type="password" id="password" required name="password">
                     <label>Password</label>
                 </div>
                 <div class="remember-forgot">
                     <label><input type="checkbox">Remember me!</label>
                 </div>
-                <button type="submit" class="btn">Login!</button>
+                <button id="login-btn" type="submit" class="btn">Login!</button>
 
                 <div class="forgot-user-pw">
                     <a href="#">Forgot Username?</a>
@@ -60,22 +60,24 @@
             </form>
         </div>
 
+        <div id="error-message"></div>
+
         <div class="form-box register">
             <h2>Sign Up!</h2>
-            <form action="/register" method="get">
+            <form id="register-form" action="/register" method="get">
                 <div class="input-box">
                     <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
-                    <input type="text" required>
+                    <input type="username" id="username" required name="username">
                     <label>Username</label>
                 </div>
                 <div class="input-box">
                     <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
-                    <input type="email" required>
+                    <input type="email" id="email" required name="email">
                     <label>Email</label>
                 </div>
                 <div class="input-box">
                     <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-                    <input type="password" required>
+                    <input type="password" id="password" required name="password">
                     <label>Password</label>
                 </div>
                 <div class="remember-forgot">
