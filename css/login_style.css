@@ -163,6 +163,8 @@ p {
     transform: translateX(0);
 }
 
+
+
 .wrapper .icon-close {
     position: absolute;
     top: 0;
@@ -184,6 +186,12 @@ p {
 
 
 .form-box.login h2 {
+    font-size: 2em;
+    font-weight: 1000;
+    text-align: center;
+}
+
+.form-box.register h2 {
     font-size: 2em;
     font-weight: 1000;
     text-align: center;
