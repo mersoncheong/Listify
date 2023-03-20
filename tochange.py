@@ -25,13 +25,37 @@ def home():
 
 @app.route("/marketplace")
 def marketplace():
-    return render_template("home.html");
+    if "search" in session:
+        keyword = session["search"]
+        statement = get_search(keyword);
+        second = get_length(keyword);
+        length = db.execute(second).fetchone()[0]
+        session.pop("search",None)    
+    else :
+        statement = start_page()
+        length = 100;
+
+    if "user" in session:
+        user = session["user"]
+
+    result = db.execute(statement);
+    products = {};
+    container = ["name","price","date"]
+    rows = result.fetchall();
+    c = 0
+    for row in rows:
+        my_dict = {}
+        for i in range(3):
+            my_dict[container[i]] = row[i]
+        products[c] = my_dict
+        c += 1
+    return render_template("home.html", user = user, length = length, products = products);
 
 @app.route("/user") 
 def user():
     if "user" in session:
         user = session["user"]
-        render_template("home.html", user =user)
+        return render_template("home.html", user =user)
     else:
         flash("Please Login")
         return redirect(url_for("home"))
@@ -57,8 +81,11 @@ def login_into_account():
             flash("Wrong Password")
             return redirect(url_for("home"))
         else:
+            name = get_username(data["email"])
+            findName = db.execute(name)
+            name = findName.fetchone()[0]
+            session["user"] = name
             return redirect(url_for("marketplace"))
-        
     except Exception as e:
         db.rollback()
         flash("User does not exists! Please Try Again")
@@ -92,21 +119,44 @@ def insert_into_table():
         return redirect(url_for("home"))
         # return Response(str(e), 403)
 
+@app.post("/search")
+def search():
+    try: 
+        data = request.form.get("search_query") 
+        session["search"] = data
+        return redirect(url_for("marketplace"))
+    except:
+        flash("Search Error")
+        return redirect(url_for("marketplace"))
+
+
+
+
+
+
 def check_login_state(insertion):
     table_name = "registered"
     email = insertion["email"]
     password = insertion["password"]
-    string = f"{email}" + "," f"{password}"
     statement = f"SELECT password FROM {table_name} WHERE email = '{email}'"
     return sqlalchemy.text(statement)
 
+def start_page():
+    statement = f"SELECT productname, price, date FROM products ORDER BY popularity DESC LIMIT(100)"
+    return sqlalchemy.text(statement);
 
 
+def get_username(insertion):
+    statement = f"SELECT username FROM registered WHERE email = '{insertion}'"
+    return sqlalchemy.text(statement)
 
+def get_search(insertion):
+    statement = f"SELECT productname, price, date FROM products WHERE productname LIKE '%{insertion}%' ORDER BY popularity DESC"
+    return sqlalchemy.text(statement)
 
-
-
-
+def get_length(insertion):
+    statement = f"SELECT COUNT(*) FROM products WHERE productname LIKE '%{insertion}%'"
+    return sqlalchemy.text(statement)
 
 def generate_insert_table_statement(insertion):
     # ? Fetching table name and the rows/tuples body object from the request
@@ -146,4 +196,4 @@ def generate_insert_table_statement(insertion):
 PORT = 2222;
 
 if __name__ == "__main__":
-     app.run(debug = True);
+     app.run(debug=True)

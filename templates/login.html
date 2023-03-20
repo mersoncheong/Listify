@@ -31,7 +31,6 @@
     </div>
     
     <div class = "flash-message">        
-        {% block content %}
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for msg in messages %}
@@ -39,9 +38,7 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        {% endblock %}
     </div>
-
 
 
     <div class="wrapper">
@@ -74,8 +71,6 @@
             </form>
         </div>
 
-        <!-- <div class = "flash-message">        
-        </div> -->
 
         <div class="form-box register">
             <h2>Sign Up!</h2>

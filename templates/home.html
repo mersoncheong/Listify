@@ -19,11 +19,9 @@
         </ul>
     </nav>
     <h1 class="product-heading">Product Listings</h1>
-    {% block content %}
     <p> Welcome {{user}} </p>
-    {% endblock %}
     <div class="search">
-        <form action="/search" method="GET">
+        <form action="/search" method="post">
             <input type="text" name="search_query" placeholder="What are you looking for?">
             <button type="submit">Search</button>
         </form>
@@ -33,20 +31,21 @@
             <tr>
                 <th>Product Name</th>
                 <th>Price</th>
-                <th>Owner</th>
+                <!-- <th>Owner</th> -->
                 <th>Date Posted</th>
             </tr>
         </thead>
         <tbody>
-            placeholder for merson
-            {% for product in products %}
+            {%block content%}
+            {% for i in range(length) %}
             <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.owner }}</td>
-                <td>{{ product.date_posted }}</td>
+                <td>{{ products[i]["name"] }}</td>
+                <!-- <td>{{ product }}</td> -->
+                <td>{{ products[i]["price"] }}</td>
+                <td>{{ products[i]["date"]}}</td>
             </tr>
             {% endfor %}
+            {% endblock%}
         </tbody>
     </table>
     <script src="../js/script.js"></script>
