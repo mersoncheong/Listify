@@ -110,3 +110,7 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: darkblue;
 }
+
+#flash_msg {
+    background-color: red;
+}
