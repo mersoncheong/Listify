@@ -5,10 +5,52 @@
     font-family: "Didact Gothic";
 }
 
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+    background: cornflowerblue;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
 
+.navigation a {
+    position: relative;
+    font-size: 1.1em;
+    color: aliceblue;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 40px;
+
+}
+
+.wrap {
+    position: absolute;
+    margin-top: 100px;
+    width: 100%;
+}
+
+.navigation .btnLogout {
+    width: 130px;
+    height: 50px;
+    background: transparent;
+    border: 2px solid aliceblue;
+    outline: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: aliceblue;
+    font-weight: 500;
+    margin-left: 40px;
+}
 
 body {
     /*add images*/
+    position: relative;
     background: #EBE8E2;
 }
 
@@ -81,12 +123,16 @@ tr:hover {
 }
 
 .container {
-    position: absolute;
-    top: 100px;
-    right: 0;
+    position: relative;
     display: flex;
-    justify-content: flex-end;
-    align-items: space-between;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.container .welcome {
+    margin-right: auto;
+
 }
 
 .filter {
