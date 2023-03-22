@@ -13,55 +13,66 @@
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-        </ul>
-    </nav>
-    <h1 class="product-heading">Product Listings</h1>
-    <p> Welcome {{user}} </p>
+    <header>
+        <nav class="navigation">
+            <a href="/">Home</a>
+            <a href="/">About</a>
+            <a href="/">Listings</a>
+            <button class="btnLogout">Logout</button>
 
-    <div class="container">
-        <div class="search">
-            <form action="/search" method="post">
-                <input type="text" name="search_query" placeholder="What are you looking for?">
-                <button type="submit">Search</button>
-            </form>
+        </nav>
+    </header>
+
+    <div class="wrap">
+        <h1 class="product-heading">Product Listings</h1>
+
+
+        <div class="container">
+            <p class="welcome"> Welcome {{user}} </p>
+
+            <div class="search">
+                <form action="/search" method="post">
+                    <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
+
+                </form>
+                <button type="submit" class="searchbtn">Search</button>
+            </div>
+
+            <div class="filter">
+                <label for="filter" class="label"> Filter </label>
+                <select name="filter" id="filter">
+                    <option value="today" name="today">today</option>
+                    <option value="past 3 days" name="past_3_days">past 3 days</option>
+                    <option value="past 7 days" name="past_7_days">past 7 days</option>
+                </select>
+            </div>
         </div>
-    
-        <div class="filter">
-            <label for="filter" class="label" > Filter </label>
-            <select name="filter" id="filter">
-                <option value="today" name="today">today</option>
-                <option value="past 3 days" name="past_3_days">past 3 days</option>
-                <option value="past 7 days" name="past_7_days">past 7 days</option>
-            </select>
-        </div>
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <!-- <th>Owner</th> -->
+                    <th>Date Posted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%block content%}
+                {% for i in range(length) %}
+                <tr>
+                    <td>{{ products[i]["name"] }}</td>
+                    <!-- <td>{{ product }}</td> -->
+                    <td>{{ products[i]["price"] }}</td>
+                    <td>{{ products[i]["date"]}}</td>
+                </tr>
+                {% endfor %}
+                {% endblock%}
+            </tbody>
+        </table>
+
     </div>
-    
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Price</th>
-                <!-- <th>Owner</th> -->
-                <th>Date Posted</th>
-            </tr>
-        </thead>
-        <tbody>
-            {%block content%}
-            {% for i in range(length) %}
-            <tr>
-                <td>{{ products[i]["name"] }}</td>
-                <!-- <td>{{ product }}</td> -->
-                <td>{{ products[i]["price"] }}</td>
-                <td>{{ products[i]["date"]}}</td>
-            </tr>
-            {% endfor %}
-            {% endblock%}
-        </tbody>
-    </table>
     <script src="../js/script.js"></script>
 </body>
 
