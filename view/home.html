@@ -15,9 +15,9 @@
 <body>
     <header>
         <nav class="navigation">
-            <a href="/">Home</a>
-            <a href="/">About</a>
-            <a href="/">Listings</a>
+            <a href="/listing">Home</a>
+            <a href="/listing">About</a>
+            <a href="/listing">Listings</a>
             <button class="btnLogout">Logout</button>
 
         </nav>
@@ -33,20 +33,29 @@
             <div class="search">
                 <form action="/search" method="post">
                     <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
-
+                    <button type="submit" class="searchbtn">Search</button>
                 </form>
-                <button type="submit" class="searchbtn">Search</button>
+
             </div>
 
             <div class="filter">
-                <label for="filter" class="label"> Filter </label>
-                <select name="filter" id="filter">
+                <!-- <label for="filter" class="label"> Filter </label> -->
+                <!-- <select name="filter" id="filter">
                     <option value="today" name="today">today</option>
                     <option value="past 3 days" name="past_3_days">past 3 days</option>
                     <option value="past 7 days" name="past_7_days">past 7 days</option>
-                </select>
+                </select> -->
+                <form id = "filter-form" action = "/filter" method="post">
+                    <label for="dropdown"> Filter </label>
+                    <select name="dropdown" id="dropdown">
+                        <option value="today" name="today">today</option>
+                        <option value="past 3 days" name="past_3_days">past 3 days</option>
+                        <option value="past 7 days" name="past_7_days">past 7 days</option>
+                    </select>
+                    <button type="submit" name = "submitdropdown">Submit</button>
+                </form>
             </div>
-        </div>
+        </div>  
 
 
         <table>
@@ -73,6 +82,7 @@
         </table>
 
     </div>
+    <script type="module" src="/src/main.tsx"></script>
     <script src="../js/script.js"></script>
 </body>
 
