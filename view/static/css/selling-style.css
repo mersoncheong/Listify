@@ -169,13 +169,11 @@ tr:hover {
 }
 
 
-
-
 .container .search {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 200px;
     margin-right: 20px;
     padding: 10px;
 }
@@ -184,19 +182,71 @@ tr:hover {
     width: 100%;
 }
 
-.container .filter {
-    margin-top: 20px;
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+    background-color: cornflowerblue;
+    border-radius: 15px;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    top: 100px;
+    right: 300px;
+    width: 130px;
 }
 
+.sell-form {
+    display: none;
+    justify-content: ;
+    position: fixed;
+    bottom: 0;
+    right: 15px;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+}
 
+.form-container {
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+}
 
-
-input[type="text"] {
-    padding: 8px;
+.form-container input[type=text],
+.form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
     border: none;
-    border-radius: 3px;
-    margin-right: 10px;
-    width: 70%;
+    background: #f1f1f1;
+}
+
+.form-container input[type=text]:focus,
+.form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+.form-container .btn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.form-container .cancel {
+    background-color: red;
+}
+
+.form-container .btn:hover,
+.open-button:hover {
+    opacity: 1;
 }
 
 button[type="submit"] {
@@ -211,8 +261,4 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: darkblue;
-}
-
-#flash_msg {
-    background-color: red;
 }
