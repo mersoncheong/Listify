@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/selling-style.css">
+    <title>Selling page</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navigation">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">My Listings</a>
+            <button class="btnLogout">Logout</button>
+
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="wrap">
+            <h1 class="product-heading">Your Listings</h1>
+
+
+            <div class="container">
+                <p class="welcome"> Welcome {{user}} </p>
+                <div class="search">
+                    <form action="/search" method="post">
+                        <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
+                        <button type="submit" class="searchbtn">Search</button>
+                    </form>
+
+                </div>
+
+
+                <button class="open-button" onclick="openForm()">Create Listings</button>
+                <div class="sell-form" id="sell-form">
+                    <form action="/sell" method="post" class="form-container">
+                        <h1>New Listings</h1>
+
+                        <label for="item"><b>Item</b></label>
+                        <input type="text" placeholder="Enter Item" name="item" required>
+
+                        <label for="price"><b>Price</b></label>
+                        <input type="text" placeholder="Enter Price" name="price" required>
+
+                        <label for="brand"><b>Brand</b></label>
+                        <input type="text" placeholder="Enter brand" name="brand" required>
+
+                        <button type="submit" class="btn">Submit</button>
+                        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                    </form>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <!-- <th>Owner</th> -->
+                        <th>Date Posted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%block content%}
+                    {% for i in range(length) %}
+                    <tr>
+                        <td>{{ products[i]["name"] }}</td>
+                        <!-- <td>{{ product }}</td> -->
+                        <td>{{ products[i]["price"] }}</td>
+                        <td>{{ products[i]["date"]}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endblock%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.tsx"></script>
+    <script src="static/js/sell_script.js"></script>
+</body>
+
+</html>
