@@ -3,7 +3,7 @@ import json
 from flask import Flask, redirect, url_for, render_template, request, Response, flash, session
 import sqlalchemy
 import psycopg2
-from datetime import date, timedelta
+from datetime import datetime
 
 app = Flask(__name__, template_folder='view',
             static_folder='view/static')
@@ -20,8 +20,10 @@ engine = sqlalchemy.create_engine(connection_string)
 db = engine.connect()
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
+    if "user" in session:
+        session.clear()
     return render_template("index.html")
 
 
@@ -41,7 +43,9 @@ def marketplace():
     elif "filter_date" in session:
         date = session['filter_date']
         statement = filter_date(date)
-        session.pop("filter_date",None)
+        length_statement = filter_date_length(date)
+        length = db.execute(length_statement).fetchone()[0]
+        session.pop("filter_date", None)
     else:
         statement = start_page()
         length = 100
@@ -51,13 +55,12 @@ def marketplace():
 
     result = db.execute(statement)
     products = {}
-    container = ["name", "price", "date"]
     rows = result.fetchall()
     c = 0
     for row in rows:
         my_dict = {}
-        for i in range(3):
-            my_dict[container[i]] = row[i]
+        for i in range(9):
+            my_dict[i] = row[i]
         products[c] = my_dict
         c += 1
     return render_template("home.html", user=user, length=length, products=products)
@@ -141,6 +144,7 @@ def search():
         flash("Search Error")
         return redirect(url_for("marketplace"))
 
+
 @app.post("/filter")
 def filter_days():
     data = request.form['dropdown']
@@ -148,12 +152,9 @@ def filter_days():
     return redirect(url_for("marketplace"))
 
 
-
-
-@app.route("/buttonlogout")
+@app.post("/logout")
 def logout():
-    session.pop("user", None)
-    return render_template("index.html")
+    return redirect(url_for("home"))
 
 
 def check_login_state(insertion):
@@ -165,7 +166,7 @@ def check_login_state(insertion):
 
 
 def start_page():
-    statement = f"SELECT productname, price, date FROM products ORDER BY popularity DESC LIMIT(100)"
+    statement = f"SELECT * FROM listings LIMIT(100)"
     return sqlalchemy.text(statement)
 
 
@@ -180,8 +181,9 @@ def get_search(insertion):
 
 
 def get_length(insertion):
-    statement = f"SELECT COUNT(*) FROM products WHERE productname LIKE '%{insertion}%'"
+    statement = f"SELECT COUNT(*) FROM listings WHERE name LIKE '%{insertion}%'"
     return sqlalchemy.text(statement)
+
 
 def filter_date(value):
     x = float('inf')
@@ -191,48 +193,89 @@ def filter_date(value):
         x = 3
     elif value == "past 7 days":
         x = 7
-    # rem = "0000-00-00"
-    # if value == "today":
-    #     rem = today
-    # elif value == "past 3 days":
-    #     rem = today - timedelta(days = 3)
-    # elif value == "past 7 days":
-    #     rem = today - timedelta(days = 7)
-    # use =rem.strftime("%Y-%m-%d")
-    # statement = f"SELECT productname, price, date FROM products WHERE date >= '{use}'"
-    # return sqlalchemy.text(statement)
-    statement = f"SELECT  productname,price,date FROM producsts WHERE ( date  >= GETDATE() - {x})"
-    
+    statement = f"SELECT * FROM listings WHERE ( date_posted  >= CURRENT_DATE - {x})"
+    return sqlalchemy.text(statement)
+
+
+def filter_date_length(value):
+    x = float('inf')
+    if value == "today":
+        x = 0
+    elif value == "past 3 days":
+        x = 3
+    elif value == "past 7 days":
+        x = 7
+    statement = f"SELECT COUNT(*) FROM listings WHERE ( date_posted  >= CURRENT_DATE - {x})"
+    return sqlalchemy.text(statement)
+
+
 def generate_insert_table_statement(insertion):
-    # ? Fetching table name and the rows/tuples body object from the request
     table_name = insertion["name"]
     body = insertion["body"]
-    # valueTypes = insertion["valueTypes"]
-
-    # ? Generating the default insert statement template
     statement = f"INSERT INTO {table_name}  "
 
-    # ? Appending the entries with their corresponding columns
     column_names = "("
     column_values = "("
     for key, value in body.items():
         column_names += (key+",")
-        # if valueTypes[key] == "TEXT" or valueTypes[key] == "TIME":
-        #     column_values += (f"\'{value}\',")
-        # else:
         column_values += (f"'{value}',")
 
-    # ? Removing the last default comma
     column_names = column_names[:-1]+")"
     column_values = column_values[:-1]+")"
-
-    # ? Combining it all into one statement and returning
-    #! You may try to expand it to multiple tuple insertion in another method
     statement = statement + column_names+" VALUES " + column_values+";"
     return sqlalchemy.text(statement)
+
+
+@app.route("/mylisting", methods=['GET', 'POST'])
+def mylisting():
+    user = session["user"]
+    statement = get_seller_listings(user)
+    result = db.execute(statement)
+    rows = result.fetchall()
+    products = {}
+    c = 0
+    for row in rows:
+        my_dict = {}
+        for i in range(9):
+            my_dict[i] = row[i]
+        products[c] = my_dict
+        c += 1
+    length = c
+    return render_template("selling.html", length=length, user=user, products=products)
+
+
+def get_seller_listings(user):
+    statement = f"SELECT * FROM listings WHERE seller = '{user}' ORDER BY (date_posted)"
+    return sqlalchemy.text(statement)
+
+
+@app.post("/sell")
+def create_listing():
+    item = request.form.get("item")
+    price = request.form.get("price")
+    brand = request.form.get("brand")
+    condition = request.form.get("itemcon")
+    category = request.form.get("itemcat")
+    user = session["user"]
+    date = datetime.today().strftime('%Y-%m-%d')
+    get_listid = sqlalchemy.text(f"SELECT MAX(listingid) FROM listings")
+    listing_id = db.execute(get_listid).fetchone()[0] + 1
+    statement = f"INSERT INTO listings VALUES ('{listing_id}','{item}', '{condition}', '{brand}', '{price}', '{category}', '{date}', '{user}', false)"
+    db.execute(sqlalchemy.text(statement))
+    return redirect(url_for("mylisting"))
+
+
+@app.post("/gohome")
+def gohome():
+    return redirect(url_for("marketplace"))
+
+
+def recommendation(user):
+    statement = F"SELECT "
 
 
 PORT = 2222
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", PORT)
+    # app.run("0.0.0.0", PORT)
+    app.run(debug=True)

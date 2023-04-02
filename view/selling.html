@@ -12,10 +12,16 @@
 <body>
     <header>
         <nav class="navigation">
-            <a href="#">Home</a>
+            <form method="post" action="gohome" </form>
+                <input type="hidden" name="gohome" value="gohome">
+                <button type="submit" class="gohomebutton">Home</button>
+            </form>
             <a href="#">About</a>
             <a href="#">My Listings</a>
-            <button class="btnLogout">Logout</button>
+            <form method="post" action="/logout">
+                <input type="hidden" name="logouthidden" value="logouthidden">
+                <button type="submit" class="btnLogout">Logout</button>
+            </form>
 
         </nav>
     </header>
@@ -28,7 +34,7 @@
             <div class="container">
                 <p class="welcome"> Welcome {{user}} </p>
                 <div class="search">
-                    <form action="/search" method="post">
+                    <form action="/search" method="POST">
                         <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
                         <button type="submit" class="searchbtn">Search</button>
                     </form>
@@ -50,6 +56,12 @@
                         <label for="brand"><b>Brand</b></label>
                         <input type="text" placeholder="Enter brand" name="brand" required>
 
+                        <label for="condition"><b>Item Conditon</b></label>
+                        <input type="text" placeholder="Item Condition" name="itemcon" required>
+
+                        <label for="category"><b>Category</b></label>
+                        <input type="text" placeholder="Category" name="itemcat" required>
+
                         <button type="submit" class="btn">Submit</button>
                         <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
                     </form>
@@ -59,20 +71,28 @@
             <table>
                 <thead>
                     <tr>
+                        <th> Listing ID </th>
                         <th>Product Name</th>
+                        <th> Item Condition </th>
+                        <th> Brand </th>
                         <th>Price</th>
-                        <!-- <th>Owner</th> -->
-                        <th>Date Posted</th>
+                        <th>Category</th>
+                        <th> Date Listed</th>
+                        <th> Purchased </th>
                     </tr>
                 </thead>
                 <tbody>
                     {%block content%}
                     {% for i in range(length) %}
                     <tr>
-                        <td>{{ products[i]["name"] }}</td>
-                        <!-- <td>{{ product }}</td> -->
-                        <td>{{ products[i]["price"] }}</td>
-                        <td>{{ products[i]["date"]}}</td>
+                        <td>{{ products[i][0] }}</td>
+                        <td>{{ products[i][1] }}</td>
+                        <td>{{ products[i][2]}}</td>
+                        <td>{{ products[i][3]}}</td>
+                        <td>{{ products[i][4]}}</td>
+                        <td>{{ products[i][5]}}</td>
+                        <td>{{ products[i][6]}}</td>
+                        <td>{{ products[i][8]}}</td>
                     </tr>
                     {% endfor %}
                     {% endblock%}
