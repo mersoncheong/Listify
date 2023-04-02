@@ -172,7 +172,7 @@ tr:hover {
 
 
 
-.container .search {
+.container .stats {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -181,14 +181,9 @@ tr:hover {
     padding: 10px;
 }
 
-.container .search .query {
+.container .stats .stat {
     width: 100%;
 }
-
-.container .filter {
-    margin-top: 20px;
-}
-
 
 
 
@@ -214,10 +209,10 @@ button[type="submit"]:hover {
     background-color: darkblue;
 }
 
-#flash_msg {
-    background-color: red;
+.container .delete {
+    padding: 20px;
 }
 
-.container .delete {
+.container .update {
     padding: 20px;
 }

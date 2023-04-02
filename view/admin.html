@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Product Listing Table</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Didact+Gothic" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="static/css/admin-style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/home_style.css') }}">
+</head>
+
+<body>
+    <header>
+        <nav class="navigation">
+            <a href="/listing">Home</a>
+            <a href="/listing">About</a>
+            <form method="post" action="mylisting" </form>
+                <input type="hidden" name="mylistinginput" value="mylistinginputvalue">
+                <button type="submit" class="mylistingbutton">My Listings</button>
+            </form>
+            <form method="post" action="/logout">
+                <input type="hidden" name="logouthidden" value="logouthidden">
+                <button type="submit" class="btnLogout">Logout</button>
+            </form>
+
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="wrap">
+            <h1 class="product-heading">Admin Page</h1>
+
+
+            <div class="container">
+                <p class="welcome"> Welcome ADMIN </p>
+
+                <div class="stats">
+                    <form action="/search" method="post">
+                        <input type="text" class="stat" name="stats_query" placeholder="Enter item/brand/category">
+                        <button type="submit" class="statsbtn">Stats</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="delete">
+                <p>DELETE USERS</p>
+                <form action="post" action="delete_users">
+                    <input type="text" name="deleteusers" placeholder="Enter USER ID">
+                    <button type="submit" class="deleteusersbutton">Delete Users</button>
+                </form>
+            </div>
+
+            <div class="update">
+                <p>UPDATE USERS</p>
+                <form action="post" action="udpate_users">
+                    <input type="text" name="updateusers" placeholder="Enter USER ID">
+                    <button type="submit" class="updateusersbutton">Delete Users</button>
+                </form>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.tsx"></script>
+    <script src="../js/script.js"></script>
+</body>
+
+</html>
