@@ -17,10 +17,7 @@
         <nav class="navigation">
             <a href="/listing">Home</a>
             <a href="/listing">About</a>
-            <form method="post" action="mylisting" </form>
-                <input type="hidden" name="mylistinginput" value="mylistinginputvalue">
-                <button type="submit" class="mylistingbutton">My Listings</button>
-            </form>
+
             <form method="post" action="/logout">
                 <input type="hidden" name="logouthidden" value="logouthidden">
                 <button type="submit" class="btnLogout">Logout</button>
@@ -49,18 +46,39 @@
             <div class="delete">
                 <p>DELETE USERS</p>
                 <form action="post" action="delete_users">
-                    <input type="text" name="deleteusers" placeholder="Enter USER ID">
+                    <input type="text" name="deleteusers" class="deleteU" placeholder="Enter USER ID">
                     <button type="submit" class="deleteusersbutton">Delete Users</button>
                 </form>
             </div>
 
-            <div class="update">
-                <p>UPDATE USERS</p>
-                <form action="post" action="udpate_users">
-                    <input type="text" name="updateusers" placeholder="Enter USER ID">
-                    <button type="submit" class="updateusersbutton">Delete Users</button>
-                </form>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>UserID</th>
+                        <th>Username</th>
+                        <th>Date Joined</th>
+                        <th>Total Sales</th>
+                        <th>Total volume</th>
+                        <th>Earnings per item</th>
+                        <th>Days since joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%block content%}
+                    {% for i in range(length) %}
+                    <tr>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                        <td>{{ }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endblock%}
+                </tbody>
+            </table>
 
 
 

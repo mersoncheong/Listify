@@ -73,7 +73,7 @@ header {
     font-size: 1.1em;
     color: aliceblue;
     font-weight: 500;
-    margin-left: 900px;
+    margin-left: 1000px;
     transition: 0.8s;
 }
 
@@ -182,7 +182,7 @@ tr:hover {
 }
 
 .container .stats .stat {
-    width: 100%;
+    width: 80%;
 }
 
 
@@ -211,6 +211,10 @@ button[type="submit"]:hover {
 
 .container .delete {
     padding: 20px;
+}
+
+.container .delete .deleteU {
+    width: 200px;
 }
 
 .container .update {
