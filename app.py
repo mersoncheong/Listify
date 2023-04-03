@@ -34,36 +34,68 @@ def listings():
 
 @app.route("/marketplace")
 def marketplace():
+    user = session["user"]
+    algo = 0
     if "search" in session:
+        algo = 1
         keyword = session["search"]
         statement = get_search(keyword)
-        second = get_length(keyword)
-        length = db.execute(second).fetchone()[0]
+        length = db.execute(statement).fetchone()[0]
         session.pop("search", None)
+        result = db.execute(statement)
     elif "filter_date" in session:
+        algo = 2
         date = session['filter_date']
         statement = filter_date(date)
         length_statement = filter_date_length(date)
         length = db.execute(length_statement).fetchone()[0]
         session.pop("filter_date", None)
+        result = db.execute(statement)
     else:
-        statement = start_page()
-        length = 100
+        algo = 3
+        first_statement = recommendation(user)
+        second_statement = cat_recommendation(user)
+        first = db.execute(first_statement)
+        second = db.execute(second_statement)
 
-    if "user" in session:
-        user = session["user"]
-
-    result = db.execute(statement)
     products = {}
-    rows = result.fetchall()
-    c = 0
-    for row in rows:
-        my_dict = {}
-        for i in range(9):
-            my_dict[i] = row[i]
-        products[c] = my_dict
-        c += 1
-    return render_template("home.html", user=user, length=length, products=products)
+    if algo == 1 or algo == 2:
+        rows = result.fetchall()
+        c = 0
+        for row in rows:
+            my_dict = {}
+            for i in range(9):
+                my_dict[i] = row[i]
+            products[c] = my_dict
+            c += 1
+    else:
+        first_row = first.fetchall()
+        second_row = second.fetchall()
+        c = 0
+        for row in first_row:
+            my_dict = {}
+            for i in range(9):
+                my_dict[i] = row[i]
+            products[c] = my_dict
+            c += 1
+        for row in second_row:
+            my_dict = {}
+            for i in range(9):
+                my_dict[i] = row[i]
+            products[c] = my_dict
+            c += 1
+        if c == 0:
+            statement = start_page()
+            result = db.execute(statement)
+            rows = result.fetchall()
+            c = 0
+            for row in rows:
+                my_dict = {}
+                for i in range(9):
+                    my_dict[i] = row[i]
+                products[c] = my_dict
+                c += 1
+    return render_template("home.html", user=user, length=c, products=products)
 
 
 @app.route("/user")
@@ -80,7 +112,6 @@ def user():
 def login_into_account():
     try:
         data = {
-            "name": "registered",
             "email": request.form.get("email"),
             "password": request.form.get("password")
         }
@@ -114,15 +145,11 @@ def login_into_account():
 def insert_into_table():
     try:
         data = {
-            "name": "registered",
-            "body": {
-                "username": request.form.get("username"),
-                "email": request.form.get("email"),
-                "password": request.form.get("password")
-            }
+            "username": request.form.get("username"),
+            "email": request.form.get("email"),
+            "password": request.form.get("password")
         }
-        # insertion = json.loads(data)
-        statement = generate_insert_table_statement(data)
+        statement = register_statement(data)
         db.execute(statement)
         db.commit()
         flash("Account Creation Sucessful")
@@ -158,30 +185,33 @@ def logout():
 
 
 def check_login_state(insertion):
-    table_name = "registered"
+    email = insertion["email"]
+    statement = f"SELECT password FROM users WHERE email = '{email}'"
+    return sqlalchemy.text(statement)
+
+
+def register_statement(insertion):
+    username = insertion["username"]
     email = insertion["email"]
     password = insertion["password"]
-    statement = f"SELECT password FROM {table_name} WHERE email = '{email}'"
+    statement = f"""
+    INSERT INTO users VALUES ( '{email}', '{username}', '{password}', CURRENT_DATE)
+    """
     return sqlalchemy.text(statement)
 
 
 def start_page():
-    statement = f"SELECT * FROM listings LIMIT(100)"
+    statement = f"SELECT * FROM listings ORDER BY (date_posted) LIMIT(100)"
     return sqlalchemy.text(statement)
 
 
 def get_username(insertion):
-    statement = f"SELECT username FROM registered WHERE email = '{insertion}'"
+    statement = f"SELECT username FROM users WHERE email = '{insertion}'"
     return sqlalchemy.text(statement)
 
 
 def get_search(insertion):
-    statement = f"SELECT productname, price, date FROM products WHERE productname LIKE '%{insertion}%' ORDER BY popularity DESC"
-    return sqlalchemy.text(statement)
-
-
-def get_length(insertion):
-    statement = f"SELECT COUNT(*) FROM listings WHERE name LIKE '%{insertion}%'"
+    statement = f"SELECT * FROM listings WHERE name LIKE '%{insertion}%' ORDER BY date_posted DESC"
     return sqlalchemy.text(statement)
 
 
@@ -206,23 +236,6 @@ def filter_date_length(value):
     elif value == "past 7 days":
         x = 7
     statement = f"SELECT COUNT(*) FROM listings WHERE ( date_posted  >= CURRENT_DATE - {x})"
-    return sqlalchemy.text(statement)
-
-
-def generate_insert_table_statement(insertion):
-    table_name = insertion["name"]
-    body = insertion["body"]
-    statement = f"INSERT INTO {table_name}  "
-
-    column_names = "("
-    column_values = "("
-    for key, value in body.items():
-        column_names += (key+",")
-        column_values += (f"'{value}',")
-
-    column_names = column_names[:-1]+")"
-    column_values = column_values[:-1]+")"
-    statement = statement + column_names+" VALUES " + column_values+";"
     return sqlalchemy.text(statement)
 
 
@@ -262,6 +275,7 @@ def create_listing():
     listing_id = db.execute(get_listid).fetchone()[0] + 1
     statement = f"INSERT INTO listings VALUES ('{listing_id}','{item}', '{condition}', '{brand}', '{price}', '{category}', '{date}', '{user}', false)"
     db.execute(sqlalchemy.text(statement))
+    db.commit()
     return redirect(url_for("mylisting"))
 
 
@@ -271,7 +285,78 @@ def gohome():
 
 
 def recommendation(user):
-    statement = F"SELECT "
+    statement = f"""
+    SELECT * FROM listings l1 
+    WHERE l1.brand_name IN (
+        SELECT l.brand_name
+        FROM transactions t, listings l 
+        WHERE l.listingid = t.listing
+        AND t.buyer = '{user}' )
+    ORDER BY l1.date_posted DESC
+    LIMIT(30)
+    """
+    return sqlalchemy.text(statement)
+
+
+def cat_recommendation(user):
+    statement = f"""
+    SELECT * 
+    FROM listings l1 
+    WHERE l1.main_category IN (
+    SELECT l.main_category 
+        FROM transactions t, listings l 
+        WHERE l.listingid = t.listing
+        AND t.buyer = '{user}'
+        )
+    ORDER BY l1.date_posted DESC
+    LIMIT(30)
+    """
+    return sqlalchemy.text(statement)
+
+
+@app.post("/buyform")
+def buy_listing():
+    try:
+        data = request.form.get("item")
+        db.execute(buy_statement(data))
+        db.commit()
+        return redirect(url_for("marketplace"))
+    except Exception as e:
+        return redirect(url_for("marketplace"))
+
+
+def buy_statement(id):
+    statement = f"""
+    UPDATE listings
+    SET purchased = true
+    WHERE listingid = '{id}'
+    """
+    return sqlalchemy.text(statement)
+
+
+
+@app.post("/stats")
+def stats_page():
+    return render_template("stats.html")
+
+
+
+def most_popular_sellers():
+    statement = f"""
+    SELECT 
+    FROM transactions t
+    WHERE
+    """
+
+
+
+
+
+
+
+
+
+
 
 
 PORT = 2222

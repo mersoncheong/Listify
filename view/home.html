@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +17,10 @@
     <header>
         <nav class="navigation">
             <a href="/listing">Home</a>
-            <a href="/listing">About</a>
+            <form method="post" action="/stats" </form>
+                <input type="hidden" name="statistics" value="statisticsvalue">
+                <button type="submit" class="statisticsbutton">Statistics</button>
+            </form>
             <form method="post" action="mylisting" </form>
                 <input type="hidden" name="mylistinginput" value="mylistinginputvalue">
                 <button type="submit" class="mylistingbutton">My Listings</button>
@@ -59,7 +63,7 @@
 
                 <button class="open-button" onclick="openForm()">Buy Listings</button>
                 <div class="sell-form" id="sell-form">
-                    <form action="/sell" method="post" class="form-container">
+                    <form action="/buyform" method="post" class="form-container">
                         <h1>Buy Listings</h1>
 
                         <label for="item"><b>Item</b></label>
@@ -75,6 +79,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th> Listing ID </th>
                         <th>Product Name</th>
                         <th> Item Condition </th>
                         <th> Brand </th>
@@ -88,6 +93,7 @@
                     {%block content%}
                     {% for i in range(length) %}
                     <tr>
+                        <td>{{ products[i][0] }}</td>
                         <td>{{ products[i][1] }}</td>
                         <td>{{ products[i][2] }}</td>
                         <td>{{ products[i][3] }}</td>
