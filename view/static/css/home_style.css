@@ -73,7 +73,7 @@ header {
     font-size: 1.1em;
     color: aliceblue;
     font-weight: 500;
-    margin-left: 900px;
+    margin-left: 1000px;
     transition: 0.8s;
 }
 
@@ -218,6 +218,9 @@ button[type="submit"]:hover {
     background-color: red;
 }
 
+.container .delete {
+    padding: 20px;
+}
 
 
 /* Button used to open the contact form - fixed at the bottom of the page */
