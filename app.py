@@ -334,11 +334,9 @@ def buy_statement(id):
     return sqlalchemy.text(statement)
 
 
-
 @app.post("/stats")
 def stats_page():
     return render_template("stats.html")
-
 
 
 def most_popular_sellers():
@@ -347,16 +345,6 @@ def most_popular_sellers():
     FROM transactions t
     WHERE
     """
-
-
-
-
-
-
-
-
-
-
 
 
 PORT = 2222
