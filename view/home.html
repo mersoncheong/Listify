@@ -56,6 +56,19 @@
                         <button type="submit" name="submitdropdown">Submit</button>
                     </form>
                 </div>
+
+                <button class="open-button" onclick="openForm()">Buy Listings</button>
+                <div class="sell-form" id="sell-form">
+                    <form action="/sell" method="post" class="form-container">
+                        <h1>Buy Listings</h1>
+
+                        <label for="item"><b>Item</b></label>
+                        <input type="text" placeholder="Enter ListingID" name="item" required>
+
+                        <button type="submit" class="btn">Submit</button>
+                        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                    </form>
+                </div>
             </div>
 
 
@@ -92,7 +105,7 @@
     </div>
 
     <script type="module" src="/src/main.tsx"></script>
-    <script src="../js/script.js"></script>
+    <script src="static/js/home_script.js"></script>
 </body>
 
 </html>
