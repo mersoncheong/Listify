@@ -19,17 +19,14 @@ header {
 }
 
 .navigation {
+    position: relative;
     display: flex;
-    width: 100%;
     align-items: center;
-    justify-content: center;
-
-
+    justify-content: space-between;
 }
 
 .navigation a {
     position: relative;
-    float: left;
     font-size: 1.1em;
     color: aliceblue;
     text-decoration: none;
@@ -64,12 +61,8 @@ header {
     width: 100%;
 }
 
-.navigation .from1 {
-    position: absolute;
-    right: 100px;
-}
-
 .navigation .btnLogout {
+    position: relative;
     width: 130px;
     height: 50px;
     background: transparent;
@@ -80,7 +73,8 @@ header {
     font-size: 1.1em;
     color: aliceblue;
     font-weight: 500;
-    transition: .8s;
+    margin-left: 1000px;
+    transition: 0.8s;
 }
 
 .navigation .btnLogout:hover {
@@ -88,15 +82,13 @@ header {
     color: darkblue;
 }
 
-
 body {
     /*add images*/
     position: relative;
-    display: flex;
     background: #EBE8E2;
 }
 
-.table-heading {
+.product-heading {
     font-size: 36px;
     font-weight: bold;
     text-align: center;
@@ -180,7 +172,7 @@ tr:hover {
 
 
 
-.container .stats {
+.container .search {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,9 +181,14 @@ tr:hover {
     padding: 10px;
 }
 
-.container .stats .stat {
-    width: 80%;
+.container .search .query {
+    width: 100%;
 }
+
+.container .filter {
+    margin-top: 20px;
+}
+
 
 
 
@@ -217,20 +214,92 @@ button[type="submit"]:hover {
     background-color: darkblue;
 }
 
+#flash_msg {
+    background-color: red;
+}
+
 .container .delete {
     padding: 20px;
 }
 
-.container .delete .deleteU {
-    width: 200px;
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+
+
+.open-button {
+    background-color: cornflowerblue;
+    border-radius: 15px;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    top: 130px;
+    right: 130px;
+    width: 130px;
 }
 
-.container .update {
-    padding: 20px;
+.sell-form {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 15px;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
 }
 
-.stats-heading {
-    font-size: 30px;
-    font-weight: bold;
-    text-align: center;
+.form-container {
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+}
+
+.form-container input[type=text],
+.form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: #f1f1f1;
+}
+
+.form-container input[type=text]:focus,
+.form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+.form-container .btn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.form-container .cancel {
+    background-color: red;
+}
+
+.form-container .btn:hover,
+.open-button:hover {
+    opacity: 1;
+}
+
+button[type="submit"] {
+    background-color: cornflowerblue;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
+    align-self: stretch;
+}
+
+button[type="submit"]:hover {
+    background-color: darkblue;
 }

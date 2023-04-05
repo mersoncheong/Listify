@@ -22,7 +22,7 @@ db = engine.connect()
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    if "user" in session:
+    if "user" in session or "admin" in session:
         session.clear()
     return render_template("index.html")
 
@@ -34,7 +34,14 @@ def listings():
 
 @app.route("/marketplace")
 def marketplace():
-    user = session["user"]
+    if "admin" in session:
+        user = "admin"
+        useremail = "admin"
+        header_value = "Sellers' Statistics"
+    else:
+        user = session["user"]
+        useremail = session["useremail"]
+        header_value = "My Listings"
     algo = 0
     if "search" in session:
         algo = 1
@@ -95,7 +102,8 @@ def marketplace():
                     my_dict[i] = row[i]
                 products[c] = my_dict
                 c += 1
-    return render_template("home.html", user=user, length=c, products=products)
+    return render_template("home.html", username=user, user=useremail, length=c, products=products,
+                           header_value = header_value)
 
 
 @app.route("/user")
@@ -128,10 +136,17 @@ def login_into_account():
             flash("Wrong Password")
             return redirect(url_for("home"))
         else:
+            admin_result = db.execute(admin_users(data['email']))
+            admin_name = admin_result.fetchone()[0]
+            admin_name = int(admin_name)
+            if admin_name:
+                session["admin"] = "admin"
+                return redirect(url_for("adminpage"))
             name = get_username(data["email"])
             findName = db.execute(name)
             name = findName.fetchone()[0]
             session["user"] = name
+            session["useremail"] = data["email"]
             return redirect(url_for("marketplace"))
     except Exception as e:
         db.rollback()
@@ -201,7 +216,7 @@ def register_statement(insertion):
 
 
 def start_page():
-    statement = f"SELECT * FROM listings ORDER BY (date_posted) LIMIT(100)"
+    statement = f"SELECT * FROM listings ORDER BY (date_posted) DESC LIMIT(100)"
     return sqlalchemy.text(statement)
 
 
@@ -241,8 +256,16 @@ def filter_date_length(value):
 
 @app.route("/mylisting", methods=['GET', 'POST'])
 def mylisting():
+    if "admin" in session:
+        return redirect(url_for("adminpage"))
     user = session["user"]
-    statement = get_seller_listings(user)
+    useremail = session['useremail']
+    if "search" in session:
+        data = session["search"]
+        statement = searchsellingquery(useremail, data)
+        session.pop('search', None)
+    else:
+        statement = get_seller_listings(useremail)
     result = db.execute(statement)
     rows = result.fetchall()
     products = {}
@@ -269,19 +292,41 @@ def create_listing():
     brand = request.form.get("brand")
     condition = request.form.get("itemcon")
     category = request.form.get("itemcat")
-    user = session["user"]
+    user = session["useremail"]
     date = datetime.today().strftime('%Y-%m-%d')
     get_listid = sqlalchemy.text(f"SELECT MAX(listingid) FROM listings")
     listing_id = db.execute(get_listid).fetchone()[0] + 1
     statement = f"INSERT INTO listings VALUES ('{listing_id}','{item}', '{condition}', '{brand}', '{price}', '{category}', '{date}', '{user}', false)"
-    db.execute(sqlalchemy.text(statement))
-    db.commit()
-    return redirect(url_for("mylisting"))
+    try:
+        db.execute(sqlalchemy.text(statement))
+        db.commit()
+        return redirect(url_for("mylisting"))
+    except Exception as e:
+        db.rollback()
+        flash("Please ensure fields are entered correctly")
+        return redirect(url_for("mylisting"))
 
 
 @app.post("/gohome")
 def gohome():
     return redirect(url_for("marketplace"))
+
+
+@app.post("/searchselling")
+def searchselling():
+    data = request.form.get("search_selling")
+    session["search"] = data
+    return redirect(url_for("mylisting"))
+
+
+def searchsellingquery(user, data):
+    statement = f"""
+    SELECT * FROM listings 
+    WHERE seller = '{user}'
+    AND name LIKE '%{data}%'
+    ORDER BY (date_posted)
+    """
+    return sqlalchemy.text(statement)
 
 
 def recommendation(user):
@@ -335,29 +380,242 @@ def buy_statement(id):
 
 
 
-@app.post("/stats")
-def stats_page():
-    return render_template("stats.html")
-
-
-
-def most_popular_sellers():
+def top_users():
     statement = f"""
-    SELECT 
+    SELECT seller
     FROM transactions t
-    WHERE
+    GROUP BY seller
+    ORDER BY COUNT(seller) DESC
+    LIMIT 50;
     """
+    return sqlalchemy.text(statement)
 
 
+def admin_users(user):
+    statement = f"""
+    SELECT COUNT(*)
+    FROM admins
+    WHERE email = '{user}'
+    """
+    return sqlalchemy.text(statement)
 
 
+@app.route("/admin", methods=['GET', 'POST'])
+def adminpage():
+    if "adminsearch" in session:
+        adminsearch = session["adminsearch"]
+        statement = adminsearchquery(adminsearch)
+    else:
+        statement = admin_home()
+    results = db.execute(statement)
+    rows = results.fetchall()
+    c = 0
+    products = {}
+    for row in rows:
+        my_dict = {}
+        for i in range(7):
+            my_dict[i] = row[i]
+        products[c] = my_dict
+        c += 1
+    return render_template("admin.html", length=c, products=products, input="Sales", input_two="Earnings")
 
 
+def admin_home():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_sales, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as earnings_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.seller
+    AND t.listing = l.listingid
+    GROUP BY u.email
+    ORDER BY total_sales DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
 
 
+@app.post("/delete_users")
+def delete_users():
+    email = request.form.get("deleteusers")
+    statement = f"""
+    DELETE FROM users 
+    WHERE email = '{email}'
+    """
+    result = sqlalchemy.text(statement)
+    try:
+        db.execute(result)
+        db.commit()
+        return redirect(url_for("adminpage"))
+    except Exception as e:
+        db.rollback()
+        flash("User not found")
+        return redirect(url_for("adminpage"))
 
 
+@app.post("/filter_admin")
+def admin_filter():
+    data = request.form.get("admindropdown")
+    filter_dict = {"top_sellers": [admin_home(), 0],
+                   "top_buyers": [admin_filter_buyers(), 1],
+                   "top_sellers_v": [admin_filter_seller_v(), 0],
+                   "top_buyers_v" : [admin_filter_buyers_v(),1],
+                   "upper_q_buyers": [admin_filter_upper_q(), 1],
+                   "lower_q_buyers": [admin_filter_lower_q(), 1],
+                   "inactive":  [admin_filter_inactive(), 1]
+                   }
+    func = filter_dict[data][0]
+    if filter_dict[data][1]:
+        input = "Purchases"
+        input_two = "Purchase Price"
+    else:
+        input = "Sales"
+        input_two = "Earnings"
+    result = db.execute(func)
+    rows = result.fetchall()
+    c = 0
+    products = {}
+    for row in rows:
+        my_dict = {}
+        for i in range(7):
+            my_dict[i] = row[i]
+        products[c] = my_dict
+        c += 1
+    return render_template("admin.html", length=c, products=products, input=input, input_two=input_two)
 
+
+def admin_filter_buyers():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_purchase, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as purchase_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.buyer
+    AND t.listing = l.listingid
+    GROUP BY u.email
+    ORDER BY total_purchase DESC
+    LIMIT(50); 
+    """
+    return sqlalchemy.text(statement)
+
+
+def admin_filter_seller_v():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_sales, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as earnings_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.seller
+    AND t.listing = l.listingid
+    GROUP BY u.email
+    ORDER BY total_volumes DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
+
+def admin_filter_buyers_v():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_purchase, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as purchase_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.buyer
+    AND t.listing = l.listingid
+    GROUP BY u.email
+    ORDER BY total_volumes DESC
+    LIMIT(50); 
+    """
+    return sqlalchemy.text(statement)
+
+def admin_filter_upper_q():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_purchase, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as purchase_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.buyer
+    AND t.listing = l.listingid
+    AND u.email IN (
+        SELECT t1.buyer
+        FROM transactions t1
+        WHERE NOT EXISTS (
+            SELECT * 
+            FROM transactions t2, listings l1
+            WHERE t2.listing = l1.listingid
+            AND l1.price < (
+                    SELECT PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY l2.price ASC) FROM listings l2
+            )
+        )
+    GROUP BY t1.buyer
+    )
+    GROUP BY u.email
+    ORDER BY total_purchase DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
+
+
+def admin_filter_lower_q():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_purchase, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as purchase_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.buyer
+    AND t.listing = l.listingid
+    AND u.email IN (
+        SELECT t1.buyer
+        FROM transactions t1
+        WHERE NOT EXISTS (
+            SELECT * 
+            FROM transactions t2, listings l1
+            WHERE t2.listing = l1.listingid
+            AND l1.price > (
+                    SELECT PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY l2.price ASC) FROM listings l2
+            )
+        )
+    GROUP BY t1.buyer
+    )
+    GROUP BY u.email
+    ORDER BY total_purchase DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
+
+
+def admin_filter_inactive():
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_purchase, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as purchase_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.buyer
+    AND t.listing = l.listingid
+    AND u.email NOT IN (
+    SELECT DISTINCT t.buyer
+    FROM transactions t
+    WHERE transactiondate between DATE_TRUNC('month', NOW() - INTERVAL '6 month') AND NOW()
+    )
+    GROUP BY u.email
+    ORDER BY total_volumes DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
+
+
+@app.post("/searchadminbutton")
+def searchadminbutton():
+    data = request.form.get("searchadminbutton")
+    session["adminsearch"] = data
+    return redirect(url_for("adminpage"))
+
+
+def adminsearchquery(data):
+    statement = f"""
+    SELECT u.email, u.username, u.join_date, SUM(l.price) as total_sales, COUNT(*) as total_volumes,
+    ROUND(SUM(l.price)/COUNT(*),2) as earnings_per_item, CURRENT_DATE - u.join_date as daysjoin
+    FROM users u, transactions t, listings l
+    WHERE u.email = t.seller
+    AND t.listing = l.listingid
+    AND u.username = '{data}'
+    GROUP BY u.email
+    ORDER BY total_sales DESC
+    LIMIT(50);
+    """
+    return sqlalchemy.text(statement)
 
 PORT = 2222
 

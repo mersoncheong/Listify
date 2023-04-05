@@ -19,11 +19,11 @@
             <a href="/listing">Home</a>
             <form method="post" action="/stats" </form>
                 <input type="hidden" name="statistics" value="statisticsvalue">
-                <button type="submit" class="statisticsbutton">Statistics</button>
+                <button type="submit" class="statisticsbutton">About</button>
             </form>
             <form method="post" action="mylisting" </form>
                 <input type="hidden" name="mylistinginput" value="mylistinginputvalue">
-                <button type="submit" class="mylistingbutton">My Listings</button>
+                <button type="submit" class="mylistingbutton"> {{header_value}}</button>
             </form>
             <form method="post" action="/logout">
                 <input type="hidden" name="logouthidden" value="logouthidden">
@@ -39,7 +39,7 @@
 
 
             <div class="container">
-                <p class="welcome"> Welcome {{user}} </p>
+                <p class="welcome"> Welcome {{username}} </p>
 
                 <div class="search">
                     <form action="/search" method="post">
@@ -56,6 +56,9 @@
                             <option value="today" name="today">today</option>
                             <option value="past 3 days" name="past_3_days">past 3 days</option>
                             <option value="past 7 days" name="past_7_days">past 7 days</option>
+                            <option value="price_asc" name="price_asc">Sort by price (ascending)</option>
+                            <option value="price_desc" name="price_desc">Sort by price (descending)</option>
+
                         </select>
                         <button type="submit" name="submitdropdown">Submit</button>
                     </form>

@@ -16,38 +16,68 @@
     <header>
         <nav class="navigation">
             <a href="/listing">Home</a>
-            <a href="/listing">About</a>
+            <a href="/listing">Marketplace</a>
 
-            <form method="post" action="/logout">
+            <form method="post" action="/logout" class="form1">
                 <input type="hidden" name="logouthidden" value="logouthidden">
                 <button type="submit" class="btnLogout">Logout</button>
+
             </form>
+
 
         </nav>
     </header>
 
+    <div class="flash-message">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div id="flashingmesssages"> {{ msg }} </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
     <div class="container">
         <div class="wrap">
-            <h1 class="product-heading">Admin Page</h1>
+            <h1 class="table-heading">Admin Page</h1>
 
 
             <div class="container">
                 <p class="welcome"> Welcome ADMIN </p>
 
                 <div class="stats">
-                    <form action="/search" method="post">
-                        <input type="text" class="stat" name="stats_query" placeholder="Enter item/brand/category">
+                    <form action="/searchadminbutton" method="post">
+                        <input type="text" class="stat" name="searchadminbutton" placeholder="Enter Seller's Username">
                         <button type="submit" class="statsbtn">Stats</button>
                     </form>
 
+                </div>
+
+                <div class="filter">
+                    <form id="filter-form" action="/filter_admin" method="post">
+                        <label for="admindropdown"> Filter </label>
+                        <select name="admindropdown" id="admindropdown">
+                            <option value="top_sellers" name="top_sellers"> Top Sellers (Sales)</option>
+                            <option value="top_sellers_v" name="top_sellers_v"> Top Sellers (Volume)</option>
+                            <option value="top_buyers" name="top_buyers"> Top Buyers </option>
+                            <option value="top_buyers_v" name="top_buyers_v"> Top Buyers (Volume)</option>
+                            <option value="upper_q_buyers" name="upper_q_buyers">Upper Quartile Buyers</option>
+                            <option value="lower_q_buyers" name="lower_q_buyers">Lowers Quartile Buyers</option>
+                            <option value="inactive" name="inactive">Inactive Users</option>
+
+                        </select>
+                        <button type="submit" name="submitdropdown">Submit</button>
+                    </form>
                 </div>
             </div>
 
             <div class="delete">
 
-                <form action="post" action="delete_users">
+                <form method="post" action="/delete_users">
                     <p>DELETE USERS</p>
-                    <input type="text" name="deleteusers" class="deleteU" placeholder="Enter USER ID">
+                    <input type="text" id="deleteusers" name="deleteusers" class="deleteU"
+                        placeholder="Enter User Email">
                     <button type="submit" class="deleteusersbutton">Delete Users</button>
                 </form>
             </div>
@@ -55,12 +85,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>UserID</th>
+                        <th>Email</th>
                         <th>Username</th>
                         <th>Date Joined</th>
-                        <th>Total Sales</th>
+                        <th>Total {{input}}</th>
                         <th>Total volume</th>
-                        <th>Earnings per item</th>
+                        <th>{{input_two}} per item</th>
                         <th>Days since joined</th>
                     </tr>
                 </thead>
@@ -68,13 +98,13 @@
                     {%block content%}
                     {% for i in range(length) %}
                     <tr>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
-                        <td>{{ }}</td>
+                        <td>{{products[i][0]}}</td>
+                        <td>{{products[i][1]}}</td>
+                        <td>{{products[i][2]}}</td>
+                        <td>{{products[i][3]}}</td>
+                        <td>{{products[i][4]}}</td>
+                        <td>{{products[i][5]}}</td>
+                        <td>{{products[i][6]}}</td>
                     </tr>
                     {% endfor %}
                     {% endblock%}

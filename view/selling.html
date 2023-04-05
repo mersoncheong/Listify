@@ -17,7 +17,7 @@
                 <button type="submit" class="gohomebutton">Home</button>
             </form>
             <a href="#">About</a>
-            <a href="#">My Listings</a>
+            <a href="{{url_for("mylisting")}}">My Listings</a>
             <form method="post" action="/logout">
                 <input type="hidden" name="logouthidden" value="logouthidden">
                 <button type="submit" class="btnLogout">Logout</button>
@@ -25,7 +25,16 @@
 
         </nav>
     </header>
-
+    <div class="flash-message">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div id="flashingmesssages"> {{ msg }} </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    
     <div class="container">
         <div class="wrap">
             <h1 class="product-heading">Your Listings</h1>
@@ -34,8 +43,8 @@
             <div class="container">
                 <p class="welcome"> Welcome {{user}} </p>
                 <div class="search">
-                    <form action="/search" method="POST">
-                        <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
+                    <form action="/searchselling" method="POST">
+                        <input type="text" class="query" name="search_selling" placeholder="What are you looking for?">
                         <button type="submit" class="searchbtn">Search</button>
                     </form>
 
