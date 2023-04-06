@@ -32,7 +32,7 @@
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for msg in messages %}
-        <div id="flashingmesssages"> {{ msg }} </div>
+        <div id="flashingmesssages" class="flashingmesssages"> {{ msg }} </div>
         {% endfor %}
         {% endif %}
         {% endwith %}
@@ -118,7 +118,7 @@
     </div>
 
     <script type="module" src="/src/main.tsx"></script>
-    <script src="../js/script.js"></script>
+    <script src="static/js/admin.js"></script>
 </body>
 
 </html>

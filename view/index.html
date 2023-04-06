@@ -18,8 +18,7 @@
     <header>
         <h2 class="logo">Listify</h2>
         <nav class="navigation">
-            <a href="#">Home</a>
-            <a href="#">About</a>
+
             <button class="btnLogin">Login</button>
 
         </nav>
@@ -34,7 +33,7 @@
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for msg in messages %}
-        <div id="flashingmesssages"> {{ msg }} </div>
+        <div id="flashingmesssages" class="flashingmesssages"> {{ msg }} </div>
         {% endfor %}
         {% endif %}
         {% endwith %}
@@ -56,15 +55,15 @@
                     <input type="password" id="password" required name="password">
                     <label>Password</label>
                 </div>
-                <div class="remember-forgot">
-                    <label><input type="checkbox">Remember me!</label>
-                </div>
+                <!-- <div class="remember-forgot">
+                        <label><input type="checkbox">Remember me!</label>
+                    </div> -->
                 <button id="login-btn" type="submit" class="btn">Login!</button>
 
-                <div class="forgot-user-pw">
+                <!-- <div class="forgot-user-pw">
                     <a href="#">Forgot Username?</a>
                     <a href="#">Forgot Password?</a>
-                </div>
+                </div> -->
                 <div class="login-register">
                     <p>New user? <a href="#" class="register-link">Register</a></p>
                 </div>

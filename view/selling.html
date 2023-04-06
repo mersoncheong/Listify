@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Didact+Gothic" />
     <link rel="stylesheet" href="static/css/selling-style.css">
     <title>Selling page</title>
 </head>
@@ -12,29 +13,27 @@
 <body>
     <header>
         <nav class="navigation">
-            <form method="post" action="gohome" </form>
-                <input type="hidden" name="gohome" value="gohome">
-                <button type="submit" class="gohomebutton">Home</button>
-            </form>
-            <a href="#">About</a>
-            <a href="{{url_for("mylisting")}}">My Listings</a>
+            <a href="/listing"> Home</a>
+            <a href="/about">Stats</a>
+            <a href="/mylisting">My Listings</a>
+            <a href="/purchase"> Purchases </a>
             <form method="post" action="/logout">
                 <input type="hidden" name="logouthidden" value="logouthidden">
                 <button type="submit" class="btnLogout">Logout</button>
             </form>
-
         </nav>
     </header>
     <div class="flash-message">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for msg in messages %}
-        <div id="flashingmesssages"> {{ msg }} </div>
+        <div id="flashingmesssages" class="flashingmesssages"> {{ msg }} </div>
         {% endfor %}
         {% endif %}
         {% endwith %}
     </div>
-    
+
+
     <div class="container">
         <div class="wrap">
             <h1 class="product-heading">Your Listings</h1>
