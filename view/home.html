@@ -17,21 +17,24 @@
     <header>
         <nav class="navigation">
             <a href="/listing">Home</a>
-            <form method="post" action="/stats" </form>
-                <input type="hidden" name="statistics" value="statisticsvalue">
-                <button type="submit" class="statisticsbutton">About</button>
-            </form>
-            <form method="post" action="mylisting" </form>
-                <input type="hidden" name="mylistinginput" value="mylistinginputvalue">
-                <button type="submit" class="mylistingbutton"> {{header_value}}</button>
-            </form>
+            <a href="/about"> Stats </a>
+            <a href="/mylisting"> {{header_value}} </a>
+            <a href="/purchase"> Purchases </a>
             <form method="post" action="/logout">
                 <input type="hidden" name="logouthidden" value="logouthidden">
                 <button type="submit" class="btnLogout">Logout</button>
             </form>
-
         </nav>
     </header>
+    <div class="flash-message">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div id="flashingmesssages" class="flashingmesssages"> {{ msg }} </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 
     <div class="container">
         <div class="wrap">
@@ -43,7 +46,7 @@
 
                 <div class="search">
                     <form action="/search" method="post">
-                        <input type="text" class="query" name="search_query" placeholder="What are you looking for?">
+                        <input type="text" class="query" name="search_query" placeholder="Enter Product Name">
                         <button type="submit" class="searchbtn">Search</button>
                     </form>
 
@@ -53,6 +56,7 @@
                     <form id="filter-form" action="/filter" method="post">
                         <label for="dropdown"> Filter </label>
                         <select name="dropdown" id="dropdown">
+                            <option value="buyer_recommended" name="buyer_recommended"> Recommended </option>
                             <option value="today" name="today">today</option>
                             <option value="past 3 days" name="past_3_days">past 3 days</option>
                             <option value="past 7 days" name="past_7_days">past 7 days</option>
@@ -70,7 +74,7 @@
                         <h1>Buy Listings</h1>
 
                         <label for="item"><b>Item</b></label>
-                        <input type="text" placeholder="Enter ListingID" name="item" required>
+                        <input type="text" placeholder="Enter Listing ID" name="item" required>
 
                         <button type="submit" class="btn">Submit</button>
                         <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
